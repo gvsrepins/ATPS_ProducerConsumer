@@ -1,4 +1,5 @@
 package atps_programacaoconcorrente;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,19 +33,25 @@ public class Producer extends Thread {
       Date dateBegin = new Date();
       Date dateEnd = new Date();
       String begin = dateFormat.format(dateBegin);
-      
+
       try {
         //sleep 500 miliseconds
-        Thread.sleep(500);
+        Thread.sleep(5000);
       } catch (InterruptedException e) {
         return;
       }
-      
-      String line = "-----------------------------------------------------";
+
+      String line = "\n" + "-----------------------------------------------------" + "\n";
+      String bufferUsed = "\nBuffer used: " + this.buffer.container.size();
+
       //get current date time and past to a String
       String end = dateFormat.format(dateEnd);
-      System.out.print(getName() + " put... " + (i + 1) +" From: " + begin +" To: " + end +".\n" + line + "\n");
-      
+      System.out.print(getName() + " put... " + (i + 1)
+              + " From: " + begin
+              + " To: " + end
+              + bufferUsed
+              + line);
+
       i++;
     }
   }

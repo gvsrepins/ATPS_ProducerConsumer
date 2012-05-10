@@ -1,6 +1,6 @@
 package atps_programacaoconcorrente;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 
 /**
@@ -11,7 +11,7 @@ class Buffer {
 
   //ArrayList<Integer> container = new ArrayList<Integer>();
   ArrayBlockingQueue<Integer> container;
-  private int contents, bufferSize;
+  private int bufferSize;
   private static Buffer instance = new Buffer();
 
   /**
@@ -55,8 +55,10 @@ class Buffer {
 
     //add item on bufferContainer
     this.container.add(item);
-    //System.out.println("Producer: put..." + item);
-    notify();
+
+    // Notify producer that status has changed.
+    //notify();
+    notifyAll();
   }
 
   /**
@@ -75,8 +77,11 @@ class Buffer {
 
     //remove first element of buffer
     int item = (int) this.container.take();
-    //System.out.println("Consumer: got..." + item);
-    notify();
+
+    // Notify Consumer that status has changed.
+    //notify();
+    notifyAll();
+
     return item;
   }
 

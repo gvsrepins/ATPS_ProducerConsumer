@@ -21,34 +21,49 @@ public class Consumer extends Thread {
   public void run() {
     int value;
 
-    do{
+    do {
       try {
         value = this.buffer.get();
       } catch (InterruptedException e) {
         return;
       }
-      
+
       //sets a dateFormat
       DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
       //get current date time and past to a String
       Date dateBegin = new Date();
       Date dateEnd = new Date();
       String begin = dateFormat.format(dateBegin);
-      
+
       try {
         //sleep 500 miliseconds
         Thread.sleep(5000);
       } catch (InterruptedException e) {
         return;
       }
-      
-      String line = "-----------------------------------------------------";
-      //get current date time and past to a String
-      String end = dateFormat.format(dateEnd);
-      System.out.print(getName() + " got... " + (countConsumedItens + 1) + " From: " + begin + " To: " + end + ".\n" + line + "\n");
 
       countConsumedItens++;
+
+      String line = "\n" + "-----------------------------------------------------" + "\n";
+      String bufferUsed = "\nBuffer used: " + this.buffer.container.size();
+      //get current date time and past to a String
+      String end = dateFormat.format(dateEnd);
+      System.out.print(getName() + " got... "
+              + (countConsumedItens + 1)
+              + " From: " + begin + "."
+              + " To: " + end
+              + bufferUsed
+              + line);
       
-    }while (!this.buffer.isEmpty()); //|| countConsumedItens <= this.buffer.getBufferSize()
+      //wait producer finish
+      while (this.buffer.isEmpty()) {
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          return;
+        }
+      }
+
+    } while (!this.buffer.isEmpty()); //|| countConsumedItens <= this.buffer.getBufferSize()
   }
 }
