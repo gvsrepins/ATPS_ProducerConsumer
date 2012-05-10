@@ -1,43 +1,115 @@
 package atps_programacaoconcorrente;
 
+import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
+
 /**
  *
  * @author gvsrepins
  */
-public class Buffer {
+class Buffer {
 
-  private int[] contents;
+  //ArrayList<Integer> container = new ArrayList<Integer>();
+  ArrayBlockingQueue<Integer> container;
+  private int contents, bufferSize;
+  private static Buffer instance = new Buffer();
 
   /**
-   * Construct
-   * @param quantity count of content to be storage on Buffer
+   * Implements a Singleton Pattern
+   * Construct Private
+   * @param bufferSize 
    */
-  public Buffer(int count) {
-    this.contents = new int[count];
+  private Buffer() {
   }
 
   /**
-   * Populate buffer
+   * Implements a Singleton Pattern - getInstance()
+   * Is not necessary implements a Singleton pattern, but I have some troubles
+   * and because this I supose to be because the threads are not sharing de same buffer, 
+   * now I know that is not because this, however, to this study looks good for me 
+   * to do with that way. :)
+   * 
+   * @return Buffer Instance
    */
-  public void populateBuffer() {
-    for (int i = 0; i < this.getContents().length; i++) {
-      this.contents[i] = (int) Math.abs(Math.random() * i) + 1; //generate a random number
+  public static Buffer getInstance() {
+    if (instance == null) {
+      instance = new Buffer();
     }
+    return instance;
   }
 
   /**
-   * Sets item of content Buffer to 0
-   * @param position 
+   * Put items on Buffer
+   * @param int item
+   * @throws InterruptedException 
    */
-  public void erase(int position) {
-    this.contents[position] = -1;
+  public synchronized void put(int item) throws InterruptedException {
+    //wait till the buffer becomes not full
+    while (this.isFull()) {
+      try {
+        wait();
+      } catch (InterruptedException e) {
+        throw e;
+      }
+    }
+
+    //add item on bufferContainer
+    this.container.add(item);
+    //System.out.println("Producer: put..." + item);
+    notify();
   }
 
-  public int[] getContents() {
-    return contents;
+  /**
+   * Get items of Buffer
+   * @return value
+   * @throws InterruptedException 
+   **/
+  public synchronized int get() throws InterruptedException {
+    while (this.isEmpty()) {	//wait until something appears in the buffer
+      try {
+        wait();
+      } catch (InterruptedException e) {
+        throw e;
+      }
+    }
+
+    //remove first element of buffer
+    int item = (int) this.container.take();
+    //System.out.println("Consumer: got..." + item);
+    notify();
+    return item;
   }
 
-  public void setContents(int[] contents) {
-    this.contents = contents;
+  /**
+   * getBufferSize
+   * @param bufferSize 
+   */
+  public int getBufferSize() {
+    return this.bufferSize;
+  }
+
+  /**
+   * 
+   * @param bufferSize 
+   */
+  public void setBufferSize(int bufferSize) {
+    this.bufferSize = bufferSize;
+    this.container = new ArrayBlockingQueue<Integer>(bufferSize);
+  }
+
+  /**
+   * Verify if container is empty
+   * @return boolean
+   */
+  public boolean isFull() {
+    return this.container.size() == this.bufferSize;
+  }
+
+  /**
+   * Verify if container is empty
+   * @return boolean
+   */
+  public boolean isEmpty() {
+    return this.container.isEmpty();
   }
 }

@@ -1,25 +1,39 @@
 package atps_programacaoconcorrente;
 
 /**
- *
+ * 
  * @author gvsrepins
  */
 public class ATPS_ProgramacaoConcorrente {
-  
+
   /**
    * @param args the command line arguments
    */
   public static void main(String[] args) {
-    // TODO code application logic here
-    int countThreads = 50;
+    int countThreads = 1; //quantity of threads to be generate
+    int bufferSize = 3;  //size of buffer
 
-    Buffer buffer = new Buffer(5000);
-    buffer.populateBuffer();
+    Buffer buffer = Buffer.getInstance();
+    buffer.setBufferSize(bufferSize);
 
-    //execute Threads Consumer
+    // create new threads
     for (int i = 1; i <= countThreads; i++) {
-      new Consumer("Thread " + i, buffer).start();
-    }
 
+      Thread produtor = new Producer("Producer" + i);
+      Thread consumer = new Consumer("Consumer" + i);
+
+
+      // starting threads
+      produtor.start();
+      consumer.start();
+
+      // Wait for the threads to finish
+      try {
+        produtor.join();
+        consumer.join();
+      } catch (InterruptedException e) {
+        return;
+      }
+    }
   }
 }
