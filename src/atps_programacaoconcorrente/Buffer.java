@@ -2,6 +2,9 @@ package atps_programacaoconcorrente;
 
 //import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -11,7 +14,7 @@ class Buffer {
 
   //ArrayList<Integer> container = new ArrayList<Integer>();
   ArrayBlockingQueue<Integer> container;
-  private int bufferSize;
+  private int bufferSize, producedCount;
   private static Buffer instance = new Buffer();
 
   /**
@@ -44,6 +47,13 @@ class Buffer {
    * @throws InterruptedException 
    */
   public synchronized void put(int item) throws InterruptedException {
+
+    //sets a dateFormat
+    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+    //get current date time and past to a String
+    Date dateBegin = new Date();
+    String begin = dateFormat.format(dateBegin);
+
     //wait till the buffer becomes not full
     while (this.isFull()) {
       try {
@@ -56,17 +66,39 @@ class Buffer {
     //add item on bufferContainer
     this.container.add(item);
 
+    
+
+
+    String line = "\n" + "-----------------------------------------------------" + "\n";
+    String bufferUsed = "\nBuffer used: " + this.container.size();
+
+    //get current date time and past to a String
+    Date dateEnd = new Date();
+    String end = dateFormat.format(dateEnd);
+    System.out.print("Producer" + " put... " + (item)
+            + " From: " + begin
+            + " To: " + end
+            + bufferUsed
+            + line);
+
     // Notify producer that status has changed.
     //notify();
     notifyAll();
   }
 
   /**
-   * Get items of Buffer
+   * Get items from Buffer
    * @return value
    * @throws InterruptedException 
    **/
   public synchronized int get() throws InterruptedException {
+
+    //sets a dateFormat
+    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+    //get current date time and past to a String
+    Date dateBegin = new Date();
+    String begin = dateFormat.format(dateBegin);
+
     while (this.isEmpty()) {	//wait until something appears in the buffer
       try {
         wait();
@@ -75,8 +107,28 @@ class Buffer {
       }
     }
 
+
     //remove first element of buffer
     int item = (int) this.container.take();
+    //int item = (int) this.container.remove(0);
+
+
+    
+
+
+
+    String line = "\n" + "-----------------------------------------------------" + "\n";
+    String bufferUsed = "\nBuffer used: " + this.container.size();
+    //get current date time and past to a String
+    Date dateEnd = new Date();
+    String end = dateFormat.format(dateEnd);
+    System.out.print("Consumer" + " got... "
+            + (item)
+            + " From: " + begin + "."
+            + " To: " + end
+            + bufferUsed
+            + line);
+
 
     // Notify Consumer that status has changed.
     //notify();

@@ -10,8 +10,8 @@ public class ATPS_ProgramacaoConcorrente {
    * @param args the command line arguments
    */
   public static void main(String[] args) {
-    int countThreads = 10; //quantity of threads to be generate
-    int bufferSize = 5000;  //size of buffer
+    int countThreads = 1; //quantity of threads to be generate
+    int bufferSize = 2;  //size of buffer
 
     Buffer buffer = Buffer.getInstance();
     buffer.setBufferSize(bufferSize);
@@ -20,19 +20,24 @@ public class ATPS_ProgramacaoConcorrente {
     for (int i = 1; i <= countThreads; i++) {
 
       // starting threads
-      new Producer("Producer" + i).start();
-      new Consumer("Consumer" + i).start();
+      //new Producer("Producer" + i).start();
+      //new Consumer("Consumer" + i).start();
+
+      Producer produtor = new Producer("Producer" + i);
+      Consumer consumer = new Consumer("Consumer" + i);
 
       // Wait for the threads to finish
-      /**
-      
+      produtor.start();
+      consumer.start();
+
       try {
-      produtor.join();
-      consumer.join();
+        produtor.join();
+        consumer.join();
       } catch (InterruptedException e) {
-      return;
+        return;
       }
-      */
+
+
     }
   }
 }
