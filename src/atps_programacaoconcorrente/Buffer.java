@@ -2,6 +2,7 @@ package atps_programacaoconcorrente;
 
 //import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,8 +14,9 @@ import java.util.Date;
 class Buffer {
 
   //ArrayList<Integer> container = new ArrayList<Integer>();
-  ArrayBlockingQueue<Integer> container;
-  private int bufferSize, producedCount;
+  public static ArrayBlockingQueue<Integer> container;
+  private int bufferSize;
+  public static int producedCount = 0, consumedCount = 0;
   private static Buffer instance = new Buffer();
 
   /**
@@ -48,15 +50,16 @@ class Buffer {
    */
   public synchronized void put(int item) throws InterruptedException {
 
-    //sets a dateFormat
-    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-    //get current date time and past to a String
-    Date dateBegin = new Date();
-    String begin = dateFormat.format(dateBegin);
+//    //sets a dateFormat
+//    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+//    //get current date time and past to a String
+//    Date dateBegin = new Date();
+//    String begin = dateFormat.format(dateBegin);
 
     //wait till the buffer becomes not full
     while (this.isFull()) {
       try {
+        //Thread.sleep(100);
         wait();
       } catch (InterruptedException e) {
         throw e;
@@ -66,20 +69,26 @@ class Buffer {
     //add item on bufferContainer
     this.container.add(item);
 
-    
+//    try {
+//      Thread.sleep(5000); // sleep for a randomly chosen time
+//    } catch (InterruptedException e) {
+//      throw e;
+//    }
 
+//    String line = "\n" + "-----------------------------------------------------" + "\n";
+//    String bufferUsed = "\nBuffer used: " + this.container.size();
+//    String strProducedCount = "\nProduced: " + (++this.producedCount);
+//
+//    //get current date time and past to a String
+//    Date dateEnd = new Date();
+//    String end = dateFormat.format(dateEnd);
+//    System.out.print("Producer" + " put... " + (item)
+//            + " From: " + begin
+//            + " To: " + end
+//            + bufferUsed
+//            + strProducedCount
+//            + line);
 
-    String line = "\n" + "-----------------------------------------------------" + "\n";
-    String bufferUsed = "\nBuffer used: " + this.container.size();
-
-    //get current date time and past to a String
-    Date dateEnd = new Date();
-    String end = dateFormat.format(dateEnd);
-    System.out.print("Producer" + " put... " + (item)
-            + " From: " + begin
-            + " To: " + end
-            + bufferUsed
-            + line);
 
     // Notify producer that status has changed.
     //notify();
@@ -93,46 +102,48 @@ class Buffer {
    **/
   public synchronized int get() throws InterruptedException {
 
-    //sets a dateFormat
-    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-    //get current date time and past to a String
-    Date dateBegin = new Date();
-    String begin = dateFormat.format(dateBegin);
+//    //sets a dateFormat
+//    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+//    //get current date time and past to a String
+//    Date dateBegin = new Date();
+//    String begin = dateFormat.format(dateBegin);
 
     while (this.isEmpty()) {	//wait until something appears in the buffer
       try {
+        //Thread.sleep(100);
         wait();
       } catch (InterruptedException e) {
         throw e;
       }
     }
 
-
     //remove first element of buffer
     int item = (int) this.container.take();
     //int item = (int) this.container.remove(0);
 
-
-    
-
-
-
-    String line = "\n" + "-----------------------------------------------------" + "\n";
-    String bufferUsed = "\nBuffer used: " + this.container.size();
-    //get current date time and past to a String
-    Date dateEnd = new Date();
-    String end = dateFormat.format(dateEnd);
-    System.out.print("Consumer" + " got... "
-            + (item)
-            + " From: " + begin + "."
-            + " To: " + end
-            + bufferUsed
-            + line);
-
+//    try {
+//      Thread.sleep(5000); // sleep for a randomly chosen time
+//    } catch (InterruptedException e) {
+//      throw e;
+//    }
 
     // Notify Consumer that status has changed.
     //notify();
     notifyAll();
+
+//    String line = "\n" + "-----------------------------------------------------" + "\n";
+//    String bufferUsed = "\nBuffer used: " + this.container.size();
+//    String strConsumedCount = "\nConsumed: " + (++this.consumedCount);
+//    //get current date time and past to a String
+//    Date dateEnd = new Date();
+//    String end = dateFormat.format(dateEnd);
+//    System.out.print("Consumer" + " got... "
+//            + (item)
+//            + " From: " + begin + "."
+//            + " To: " + end
+//            + bufferUsed
+//            + strConsumedCount
+//            + line);
 
     return item;
   }

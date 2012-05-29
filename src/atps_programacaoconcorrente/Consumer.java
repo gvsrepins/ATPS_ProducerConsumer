@@ -1,10 +1,14 @@
 package atps_programacaoconcorrente;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * 
  * @author gvsrepins
  */
-public class Consumer extends Thread {
+public class Consumer extends Thread implements Runnable {
 
   private Buffer buffer;
   private int countConsumedItens = 0;
@@ -15,17 +19,23 @@ public class Consumer extends Thread {
   }
 
   public void run() {
-    int value;
-
+    int item;
+    
     do {
       try {
-        value = this.buffer.get();
+        item = this.buffer.get();
       } catch (InterruptedException e) {
         return;
       }
 
+      //sets a dateFormat
+      DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+      //get current date time and past to a String
+      Date dateBegin = new Date();
+      String begin = dateFormat.format(dateBegin);
+
       try {
-        Thread.sleep((int) Math.random() * 100); // sleep for a randomly chosen time
+        Thread.sleep(5000); // sleep for a randomly chosen time
       } catch (InterruptedException e) {
         return;
       }
@@ -39,6 +49,21 @@ public class Consumer extends Thread {
           return;
         }
       }
+
+      String line = "\n" + "-----------------------------------------------------" + "\n";
+      String bufferUsed = "\nBuffer used: " + this.buffer.container.size();
+      //get current date time and past to a String
+      Date dateEnd = new Date();
+      String end = dateFormat.format(dateEnd);
+      String strConsumedCount = "\nConsumed: " + (++this.buffer.consumedCount);
+      
+      System.out.print("Consumer" + " got... "
+              + (item)
+              + " From: " + begin + "."
+              + " To: " + end
+              + bufferUsed
+              + strConsumedCount
+              + line);
 
     } while (!this.buffer.isEmpty());
   }
